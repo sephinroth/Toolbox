@@ -1,0 +1,16 @@
+<suite parallel="classes" thread-count="2" verbose="10" name="mytest" annotations="JDK" time-out="600000">
+	
+	<test name="冒烟测试" junit="false" annotations="JDK">
+		<groups>
+			<run>
+				<include name="branch" />
+				<exclude name="firefox-only" />
+			</run>
+		</groups>
+		
+		<packages>
+			<package name="com.netease" />
+		</packages>
+	</test>
+	
+</suite>

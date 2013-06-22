@@ -274,8 +274,6 @@ public class PowerEmailableReporter implements IReporter {
 			}
 			Date date =new Date(start);
 			DateFormat format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
-			//Calendar cal = Calendar.getInstance();
-			//cal.setTimeInMillis(start);
 			
 			mq += 1;
 			if (mq > 1) {
@@ -320,7 +318,7 @@ public class PowerEmailableReporter implements IReporter {
 		tableStart(style, "summary");
 		m_out.println("<tr><th>Class</th>"
 				+ "<th>Method</th><th>Test Module</th>"
-				+ "<th>Authors</th><th># of<br/>Scenarios</th><th>Start</th><th>Time<br/>(ms)</th></tr>");
+				+ "<th>Maintainers</th><th># of<br/>Scenarios</th><th>Start</th><th>Time<br/>(ms)</th></tr>");
 		m_row = 0;
 	}
 
