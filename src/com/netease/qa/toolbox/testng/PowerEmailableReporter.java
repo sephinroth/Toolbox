@@ -5,15 +5,17 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.testng.IInvokedMethod;
 import org.testng.IReporter;
@@ -34,8 +36,6 @@ import com.thoughtworks.qdox.JavaDocBuilder;
 import com.thoughtworks.qdox.model.DocletTag;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
-
-import com.netease.qa.toolbox.testng.TestResultRecord;
 
 public class PowerEmailableReporter implements IReporter {
 
@@ -233,16 +233,12 @@ public class PowerEmailableReporter implements IReporter {
 		String lastClassName = "";
 		int mq = 0;
 		int cq = 0;
-		int dq = 0;
-		TreeMap<String, TestResultRecord> treemap = new TreeMap<String, TestResultRecord>();  
 		
 		for (ITestNGMethod method : getMethodSet(tests, suite)) {
 			m_row += 1;
 			m_methodIndex += 1;
 			ITestClass testClass = method.getTestClass();
 			String className = testClass.getName();
-			
-			TestResultRecord trr = new TestResultRecord();
 
 			if (mq == 0) {
 				String id = (m_testIndex == null ? null : "t"
@@ -276,6 +272,11 @@ public class PowerEmailableReporter implements IReporter {
 					start = testResult.getStartMillis();
 				}
 			}
+			Date date =new Date(start);
+			DateFormat format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
+			//Calendar cal = Calendar.getInstance();
+			//cal.setTimeInMillis(start);
+			
 			mq += 1;
 			if (mq > 1) {
 				buff.append("<tr class=\"" + style
@@ -299,17 +300,8 @@ public class PowerEmailableReporter implements IReporter {
 					+ "<td class=\"numi\">" + this.getClassComment(className) + "</td>"
 					+ "<td class=\"numi\">" + this.getAuthors(className, method) + "</td>"
 					+ "<td class=\"numi\">" + resultSet.size() + "</td>"
-					+ "<td>" + start + "</td>" + "<td class=\"numi\">"
+					+ "<td>" + format.format(date).toString() + "</td>" + "<td class=\"numi\">"
 					+ (end - start) + "</td>" + "</tr>");
-	        trr.methodName = testInstanceName;
-	        trr.scenarios = resultSet.size();
-	        trr.start = start;
-	        trr.duration = end - start;
-	        int tdq = this.getClassComment(className).split("_").length;
-	        if ( tdq> dq) {
-	        	dq = tdq;
-	        }
-	        treemap.put(this.getClassComment(className), trr);
 		}
 		
 		if (mq > 0) {
@@ -321,21 +313,6 @@ public class PowerEmailableReporter implements IReporter {
 			}
 			m_out.println(">" + lastClassName + "</td>" + buff);
 		}
-		
-		// Let's start writing a new table!
-		/*tableStart(style, "summary");
-		m_out.println("<tr><th>Method</th><th>Test Module</th>"
-				+ "<th>Authors</th><th># of<br/>Scenarios</th><th>Start</th><th>Time<br/>(ms)</th></tr>");
-		m_row = 0;
-		if (mq > 0) {
-			cq += 1;
-			m_out.print("<tr class=\"" + style
-					+ (cq % 2 == 0 ? "even" : "odd") + "\">" + "<td");
-			if (mq > 1) {
-				m_out.print(" rowspan=\"" + mq + "\"");
-			}
-			m_out.println(">" + lastClassName + "</td>" + buff);
-		}*/
 	}
 	
 	/** Starts and defines columns result summary table */
