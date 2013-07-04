@@ -40,12 +40,6 @@ import com.thoughtworks.qdox.model.JavaMethod;
 public class PowerEmailableReporter implements IReporter {
 
 	private static final Logger L = Logger.getLogger(PowerEmailableReporter.class);
-	
-	private static final JavaDocBuilder builder = new JavaDocBuilder();
-	
-	static {
-		builder.addSourceTree(new File("src"));
-	}
 
 	// ~ Instance fields ------------------------------------------------------
 
@@ -56,6 +50,10 @@ public class PowerEmailableReporter implements IReporter {
 	private Integer m_testIndex;
 
 	private int m_methodIndex;
+	
+	private JavaDocBuilder builder = new JavaDocBuilder();
+	
+	private String soucreCodeTarget = "src";
 
 	// ~ Methods --------------------------------------------------------------
 
@@ -69,6 +67,8 @@ public class PowerEmailableReporter implements IReporter {
 			L.error("output file", e);
 			return;
 		}
+
+		builder.addSourceTree(new File(this.soucreCodeTarget));
 		startHtml(m_out);
 		generateSuiteSummaryReport(suites);
 		generateMethodSummaryReport(suites);
@@ -652,6 +652,14 @@ public class PowerEmailableReporter implements IReporter {
 		return cls.getComment();
 	}
 	
+	public String getSoucreCodeTarget() {
+		return soucreCodeTarget;
+	}
+
+	public void setSoucreCodeTarget(String soucreCodeTarget) {
+		this.soucreCodeTarget = soucreCodeTarget;
+	}
+
 	// ~ Inner Classes --------------------------------------------------------
 	/** Arranges methods by classname and method name */
 	private class TestSorter implements Comparator<IInvokedMethod> {
