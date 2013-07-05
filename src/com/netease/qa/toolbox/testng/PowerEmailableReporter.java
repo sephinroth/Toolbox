@@ -68,6 +68,7 @@ public class PowerEmailableReporter implements IReporter {
 			return;
 		}
 
+		builder.setEncoding("UTF-8");
 		builder.addSourceTree(new File(this.soucreCodeTarget));
 		startHtml(m_out);
 		generateSuiteSummaryReport(suites);
