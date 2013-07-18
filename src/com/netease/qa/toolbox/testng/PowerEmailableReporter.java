@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.testng.IInvokedMethod;
 import org.testng.IReporter;
 import org.testng.IResultMap;
 import org.testng.ISuite;
@@ -428,19 +427,16 @@ public class PowerEmailableReporter implements IReporter {
 	 */
 	private Collection<ITestNGMethod> getMethodSet(IResultMap tests,
 			ISuite suite) {
-		List<IInvokedMethod> r = Lists.newArrayList();
-		List<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
-		for (IInvokedMethod im : invokedMethods) {
-			if (tests.getAllMethods().contains(im.getTestMethod())) {
-				r.add(im);
-			}
+		List<ITestNGMethod> r = Lists.newArrayList();
+		for (ITestNGMethod im : tests.getAllMethods()) {
+			r.add(im);
 		}
-		Arrays.sort(r.toArray(new IInvokedMethod[r.size()]), new TestSorter());
+		Arrays.sort(r.toArray(new ITestNGMethod[r.size()]), new TestSorter());
 		List<ITestNGMethod> result = Lists.newArrayList();
 
 		// Add all the invoked methods
-		for (IInvokedMethod m : r) {
-			result.add(m.getTestMethod());
+		for (ITestNGMethod m : r) {
+			result.add(m);
 		}
 
 		// Add all the methods that weren't invoked (e.g. skipped) that we
@@ -663,13 +659,13 @@ public class PowerEmailableReporter implements IReporter {
 
 	// ~ Inner Classes --------------------------------------------------------
 	/** Arranges methods by classname and method name */
-	private class TestSorter implements Comparator<IInvokedMethod> {
+	private class TestSorter implements Comparator<ITestNGMethod> {
 		// ~ Methods
 		// -------------------------------------------------------------
 
 		/** Arranges methods by classname and method name */
 		@Override
-		public int compare(IInvokedMethod o1, IInvokedMethod o2) {
+		public int compare(ITestNGMethod o1, ITestNGMethod o2) {
 			// System.out.println("Comparing " + o1.getMethodName() + " " +
 			// o1.getDate()
 			// + " and " + o2.getMethodName() + " " + o2.getDate());
