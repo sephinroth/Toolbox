@@ -9,8 +9,8 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -137,92 +137,13 @@ public class PowerEmailableReporter implements IReporter {
 	}
 
 	/**
+	 * 
+	 * @param suite
 	 * @param tests
+	 * @param testname
+	 * @param style
+	 * @param details
 	 */
-	protected void resultSummary(ISuite suite, IResultMap tests, String testname,
-			String style, String details) {
-		if (tests.getAllResults().size() > 0) {
-			StringBuffer buff = new StringBuffer();
-			String lastClassName = "";
-			int mq = 0;
-			int cq = 0;
-			
-			for (ITestNGMethod method : getMethodSet(tests, suite)) {
-				m_row += 1;
-				m_methodIndex += 1;
-				ITestClass testClass = method.getTestClass();
-				String className = testClass.getName();
-				
-				if (mq == 0) {
-					String id = (m_testIndex == null ? null : "t"
-							+ Integer.toString(m_testIndex));
-					titleRow(testname + " &#8212; " + style + details, 5, id);
-					m_testIndex = null;
-				}
-				if (!className.equalsIgnoreCase(lastClassName)) {
-					if (mq > 0) {
-						cq += 1;
-						m_out.print("<tr class=\"" + style
-								+ (cq % 2 == 0 ? "even" : "odd") + "\">"
-								+ "<td");
-						if (mq > 1) {
-							m_out.print(" rowspan=\"" + mq + "\"");
-						}
-						m_out.println(">" + lastClassName + "</td>" + buff);
-					}
-					mq = 0;
-					buff.setLength(0);
-					lastClassName = className;
-				}
-				Set<ITestResult> resultSet = tests.getResults(method);
-				long end = Long.MIN_VALUE;
-				long start = Long.MAX_VALUE;
-				for (ITestResult testResult : tests.getResults(method)) {
-					if (testResult.getEndMillis() > end) {
-						end = testResult.getEndMillis();
-					}
-					if (testResult.getStartMillis() < start) {
-						start = testResult.getStartMillis();
-					}
-				}
-				mq += 1;
-				if (mq > 1) {
-					buff.append("<tr class=\"" + style
-							+ (cq % 2 == 0 ? "odd" : "even") + "\">");
-				}
-				String description = method.getDescription();
-				String testInstanceName = resultSet
-						.toArray(new ITestResult[] {})[0].getTestName();
-				
-		        buff.append("<td><a href=\"#m"
-						+ m_methodIndex
-						+ "\">"
-						+ qualifiedName(method)
-						+ " "
-						+ (description != null && description.length() > 0 ? "(\""
-								+ description + "\")"
-								: "")
-						+ "</a>"
-						+ (null == testInstanceName ? "" : "<br>("
-								+ testInstanceName + ")") + "</td>"
-						+ "<td class=\"numi\">" + this.getClassComment(className) + "</td>"
-						+ "<td class=\"numi\">" + this.getAuthors(className, method) + "</td>"
-						+ "<td class=\"numi\">" + resultSet.size() + "</td>"
-						+ "<td>" + start + "</td>" + "<td class=\"numi\">"
-						+ (end - start) + "</td>" + "</tr>");
-			}
-			if (mq > 0) {
-				cq += 1;
-				m_out.print("<tr class=\"" + style
-						+ (cq % 2 == 0 ? "even" : "odd") + "\">" + "<td");
-				if (mq > 1) {
-					m_out.print(" rowspan=\"" + mq + "\"");
-				}
-				m_out.println(">" + lastClassName + "</td>" + buff);
-			}
-		}
-	}
-
 	private void cstmResultSummary(ISuite suite, IResultMap tests, String testname,
 			String style, String details) {
 		if (tests.getAllResults().size() == 0) {
@@ -431,7 +352,7 @@ public class PowerEmailableReporter implements IReporter {
 		for (ITestNGMethod im : tests.getAllMethods()) {
 			r.add(im);
 		}
-		Arrays.sort(r.toArray(new ITestNGMethod[r.size()]), new TestSorter());
+		Collections.sort(r, new TestSorter());
 		List<ITestNGMethod> result = Lists.newArrayList();
 
 		// Add all the invoked methods
@@ -666,16 +587,12 @@ public class PowerEmailableReporter implements IReporter {
 		/** Arranges methods by classname and method name */
 		@Override
 		public int compare(ITestNGMethod o1, ITestNGMethod o2) {
-			// System.out.println("Comparing " + o1.getMethodName() + " " +
-			// o1.getDate()
-			// + " and " + o2.getMethodName() + " " + o2.getDate());
-			return (int) (o1.getDate() - o2.getDate());
-			// int r = ((T) o1).getTestClass().getName().compareTo(((T)
-			// o2).getTestClass().getName());
-			// if (r == 0) {
-			// r = ((T) o1).getMethodName().compareTo(((T) o2).getMethodName());
-			// }
-			// return r;
+			//return (int) (o1.getDate() - o2.getDate());
+			int r = o1.getTestClass().getRealClass().getCanonicalName().compareTo(o2.getTestClass().getRealClass().getCanonicalName());
+			if (r == 0) {
+				r = o1.getMethodName().compareTo(o2.getMethodName());
+			}
+			return r;
 		}
 	}
 
